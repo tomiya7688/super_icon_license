@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
+from io import BytesIO
 from pathlib import Path
 from typing import Iterable
 
@@ -20,10 +22,11 @@ def is_red(r: int, g: int, b: int) -> bool:
 
 
 def gray_level(r: int, g: int, b: int) -> tuple[int, int, int]:
+    """Keep mid and light-gray areas visibly gray instead of collapsing to white."""
     luma = 0.2126 * r + 0.7152 * g + 0.0722 * b
-    if luma < 85:
+    if luma < 64:
         return BLACK
-    if luma < 170:
+    if luma < 224:
         return GRAY
     return WHITE
 
@@ -34,8 +37,22 @@ def output_kwargs(path: Path) -> dict[str, object]:
     return {"format": "PNG", "compress_level": 9}
 
 
-def convert(path: Path, preserve_red: bool) -> set[tuple[int, int, int]]:
-    with Image.open(path) as source:
+def source_image(path: Path, source_ref: str | None) -> Image.Image:
+    if source_ref is None:
+        return Image.open(path)
+    repository = path.parents[1]
+    relative_path = path.relative_to(repository).as_posix()
+    result = subprocess.run(
+        ["git", "show", f"{source_ref}:{relative_path}"],
+        cwd=repository,
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    return Image.open(BytesIO(result.stdout))
+
+
+def convert(path: Path, preserve_red: bool, source_ref: str | None) -> set[tuple[int, int, int]]:
+    with source_image(path, source_ref) as source:
         image = source.convert("RGBA")
         converted: list[tuple[int, int, int, int]] = []
         colors: set[tuple[int, int, int]] = set()
@@ -47,7 +64,7 @@ def convert(path: Path, preserve_red: bool) -> set[tuple[int, int, int]]:
             converted.append((*color, a))
             colors.add(color)
         image.putdata(converted)
-        temporary = path.with_suffix(path.suffix + ".palette-tmp")
+        temporary = path.with_name(path.stem + ".palette-tmp" + path.suffix)
         image.save(temporary, **output_kwargs(path))
     temporary.replace(path)
     return colors
@@ -61,6 +78,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("assets", type=Path)
     parser.add_argument("--keep-red", action="store_true")
+    parser.add_argument("--source-ref", help="Read unprocessed source images from this Git ref.")
     args = parser.parse_args()
 
     allowed = {BLACK, GRAY, WHITE}
@@ -72,7 +90,7 @@ def main() -> None:
         raise SystemExit(f"No PNG or WebP files in {args.assets}")
 
     for path in files:
-        colors = convert(path, args.keep_red)
+        colors = convert(path, args.keep_red, args.source_ref)
         if not colors <= allowed:
             raise RuntimeError(f"Unexpected colors in {path}: {colors - allowed}")
         print(f"{path.name}: {', '.join('#%02X%02X%02X' % color for color in sorted(colors))}")

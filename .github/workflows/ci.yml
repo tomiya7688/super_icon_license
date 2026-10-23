@@ -33,7 +33,7 @@ jobs:
           python3 tools/check_python_trust.py
 
       - name: Check Python tool syntax
-        run: python3 -m py_compile tools/reduce_palette.py tools/check_python_trust.py
+        run: python3 -m py_compile tools/reduce_palette.py tools/check_python_trust.py tools/generate_asset_manifest.py
 
       - name: Validate PNG file signatures
         run: |
@@ -48,3 +48,11 @@ jobs:
                       raise SystemExit(f"Invalid PNG header: {path}")
           print(f"Checked {len(files)} PNG assets")
           PY
+
+      - name: Validate official asset provenance catalog
+        run: |
+          python3 tools/generate_asset_manifest.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --revision "$GITHUB_SHA" \
+            --output /tmp/assets-manifest.json \
+            --checksums /tmp/SHA256SUMS

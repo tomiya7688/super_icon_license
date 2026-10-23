@@ -1,0 +1,55 @@
+name: Official asset provenance
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Assets/**'
+      - 'provenance/**'
+      - 'tools/generate_asset_manifest.py'
+      - 'LICENSE.md'
+      - '.github/workflows/provenance.yml'
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+  artifact-metadata: write
+
+jobs:
+  attest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate asset manifest and checksums
+        run: |
+          mkdir -p provenance/out
+          python3 tools/generate_asset_manifest.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --revision "$GITHUB_SHA" \
+            --output provenance/out/assets-manifest.json \
+            --checksums provenance/out/SHA256SUMS
+
+      - name: Upload provenance files
+        uses: actions/upload-artifact@v4
+        with:
+          name: asset-provenance-${{ github.sha }}
+          path: provenance/out/
+          if-no-files-found: error
+
+      - name: Attest provenance manifest
+        uses: actions/attest@v4
+        with:
+          subject-path: provenance/out/assets-manifest.json
+
+      - name: Attest official asset digests
+        uses: actions/attest@v4
+        with:
+          subject-checksums: provenance/out/SHA256SUMS

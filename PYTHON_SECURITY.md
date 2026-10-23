@@ -13,7 +13,7 @@ At the time this policy was added, this repository does **not** commit a virtual
 environment, embedded Python runtime, Docker image, `uv` lock/configuration, or
 Python `sigstore` dependency.
 
-The GitHub Actions CI upgrades pip and certifi on every run and executes
+The GitHub Actions CI first upgrades Ubuntu `ca-certificates`, then upgrades pip and certifi on every run and executes
 `tools/check_python_trust.py`. The checker records the active versions and
 actual CA bundle paths, then verifies that the affected emSign/eMudhra G3 trust
 path is not present in the certifi bundle or the system CA bundle used by

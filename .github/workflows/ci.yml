@@ -9,10 +9,16 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
+      - name: Upgrade system CA trust store
+        run: |
+          sudo apt-get update
+          sudo apt-get install --only-upgrade -y ca-certificates
+          dpkg-query -W -f='ca-certificates ${Version}\n' ca-certificates
 
       - name: Upgrade Python packaging trust baseline
         run: |

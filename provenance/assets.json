@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "asset_set": "super-icon-official-assets",
+  "creator": "tomiya7688",
+  "license": {
+    "name": "MIT License",
+    "canonical_url": "https://github.com/tomiya7688/super_icon_license/blob/main/LICENSE.md"
+  },
+  "assets": [
+    {
+      "id": "super-icon.original",
+      "path": "Assets/Super_icon_original.png",
+      "role": "original",
+      "family": "super-icon"
+    },
+    {
+      "id": "super-icon.png",
+      "path": "Assets/Supericon.png",
+      "role": "distribution",
+      "family": "super-icon",
+      "source_asset_id": "super-icon.original"
+    },
+    {
+      "id": "super-icon.webp.1",
+      "path": "Assets/super_icon.webp",
+      "role": "distribution",
+      "family": "super-icon"
+    },
+    {
+      "id": "super-icon.webp.2",
+      "path": "Assets/super_icon2.webp",
+      "role": "distribution",
+      "family": "super-icon"
+    },
+    {
+      "id": "super-icon.webp.3",
+      "path": "Assets/super_icon3.webp",
+      "role": "distribution",
+      "family": "super-icon"
+    },
+    {
+      "id": "super-icon.webp.4",
+      "path": "Assets/super_icon_4.webp",
+      "role": "distribution",
+      "family": "super-icon"
+    },
+    {
+      "id": "super-icon.webp.5",
+      "path": "Assets/super_icon_5.webp",
+      "role": "distribution",
+      "family": "super-icon"
+    },
+    {
+      "id": "super-icon.thumbnail.1",
+      "path": "Assets/super_thumbnail.webp",
+      "role": "thumbnail",
+      "family": "super-icon"
+    },
+    {
+      "id": "super-icon.thumbnail.2",
+      "path": "Assets/super_thumbnail_2.webp",
+      "role": "thumbnail",
+      "family": "super-icon"
+    },
+    {
+      "id": "super-icon.thumbnail.3",
+      "path": "Assets/super_thumbnail_3.webp",
+      "role": "thumbnail",
+      "family": "super-icon"
+    },
+    {
+      "id": "super-icon.background.1",
+      "path": "Assets/super_background_1.webp",
+      "role": "background",
+      "family": "super-icon"
+    }
+  ]
+}

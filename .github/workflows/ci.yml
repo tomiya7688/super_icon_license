@@ -10,11 +10,25 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
+      - name: Upgrade Python packaging trust baseline
+        run: |
+          python3 -m pip install --upgrade "pip>=26.2.2"
+          python3 -m pip install --upgrade -r requirements-tools.txt
+
+      - name: Record and verify Python TLS trust stores
+        run: |
+          python3 --version
+          python3 -m pip --version
+          python3 -c "import certifi; print(certifi.__version__); print(certifi.where())"
+          python3 tools/check_python_trust.py
+
       - name: Check Python tool syntax
-        run: python3 -m py_compile tools/reduce_palette.py
+        run: python3 -m py_compile tools/reduce_palette.py tools/check_python_trust.py
+
       - name: Validate PNG file signatures
         run: |
           python3 - <<'PY'

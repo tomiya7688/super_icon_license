@@ -14,6 +14,21 @@ MIT License では、商用・非商用を問わず、利用、複製、改変�
 
 画像素材は [Assets](Assets) にあります。
 
+## 公式素材の真正性
+
+公式素材には安定した asset ID と SHA-256 を割り当て、GitHub Actions で
+暗号署名付き Artifact Attestation を生成します。
+
+例:
+
+```bash
+gh attestation verify Assets/Supericon.png --repo tomiya7688/super_icon_license
+```
+
+詳しい検証方法は [PROVENANCE.md](PROVENANCE.md) を参照してください。
+
+Python ツールの TLS / CA セキュリティ基準は [PYTHON_SECURITY.md](PYTHON_SECURITY.md) に記載しています。
+
 ## リンク
 
 - [GitHub リポジトリ](https://github.com/tomiya7688/super_icon_license)
